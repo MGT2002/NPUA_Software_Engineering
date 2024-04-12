@@ -30,8 +30,11 @@ class Circle{
     bool validateR(const double r);
     bool validateCircle(const double r, const double x, const double y);
     
+    public:
+    
     friend double getLength(Circle& c);
     
+    const Circle& operator=(const Circle& c);
     friend ostream& operator<<(ostream& o, Circle& c);
     friend istream& operator>>(istream& i, Circle& c);
 };

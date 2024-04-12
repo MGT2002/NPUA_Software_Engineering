@@ -13,6 +13,7 @@ Point::Point(double x, double y){
     setXY(x, y);
     cout << "Point created! Count of instances -> "<< ++instCount << endl;
 }
+Point::Point(const Point& other) : Point(other.x, other.y) {}
 Point::~Point(){
     cout << "Point("<< x << ", " << y << ")deleted! " 
     << "Count of instances -> "<< --instCount << endl;
@@ -196,14 +197,24 @@ bool Circle::validateCircle(const double r, const double x, const double y){
         return true;
     return false;
 }
+const Circle& Circle::operator=(const Circle& c){
+    r = c.r;
+    setPoint(c.getPoint());
+    
+    return *this;
+}
 ostream& operator<<(ostream& o, Circle& c){
     o << "R = " << c.getR() << ", " << c.getPoint();
     return o;
 }
 istream& operator>>(istream& i, Circle& c){
-    i >> c.r;
+    double inputR;
+    i >> inputR;
+    c.setR(inputR);
     i.ignore(1);
-    i >> c.getPoint();
+    Point inputP(0,0);
+    i >> inputP;
+    c.setPoint(inputP);
     
     return i;
 }
@@ -258,8 +269,8 @@ bool multiplyR(Circle& c, double k){
 }
 int main ()
 {
-    Point p1  = *new Point(0.5,0.5);
-    Point p2  = *new Point(0.4,0.5);
+    Point& p1  = *new Point(0.5,0.5);
+    Point& p2  = *new Point(0.4,0.5);
     cout << "p1 = " << p1 << endl;
     cout << "p2 = " << p2 << endl;
     
@@ -291,9 +302,15 @@ int main ()
     cout << p1 << endl;
     cout << "c(r x y) = ";
     cin >> c;
-    cout << c << endl;
+    cout << c << endl << endl;
     
-    cout << "\n\n";
+    cout << "c(" << c << ") = " << "c2(" << c2 << ")" << endl;
+    c = c2;
+    cout << "c -> " << c << endl;
+    
+    delete &p1;
+    delete &p2;
+    cout << "\nmain end.\n";
     
     return 0;
 }

@@ -16,6 +16,7 @@ class Point
     public:
         
     Point(double x, double y);
+    Point(const Point& other);
     ~Point();
     
     void setXY(double x, double y);
