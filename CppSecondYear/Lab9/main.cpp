@@ -51,17 +51,18 @@ class Engine
     
     string model;
     string date;
-    string power;
+    double power;
     EngineType type;
     
     public:
     
-    Engine(string model, string date, string power, EngineType type) : model(model), date(date), power(power), type(type)
+    Engine(string model, string date, double power, EngineType type) : model(model), date(date), power(power), type(type)
     {
         instCount++;
         cout << "Engine created, count of instances " << instCount << endl;
     }
-    Engine() : Engine("", "", "", EngineType::Disel) {}
+    Engine(double power) : Engine("", "", power, EngineType::Disel) {}
+    Engine() : Engine("", "", 0, EngineType::Disel) {}
     ~Engine()
     {
         instCount--;
@@ -84,11 +85,11 @@ class Engine
     {
         this->date = date;
     }
-    string getPower() const
+    double getPower() const
     {
         return power;
     }
-    void setPower(string power)
+    void setPower(double power)
     {
         this->power = power;
     }
@@ -116,9 +117,10 @@ class Engine
         is >> input;
         e.setDate(input);
         
+        double inputD;
         cout << "Enter power: ";
-        is >> input;
-        e.setPower(input);
+        is >> inputD;
+        e.setPower(inputD);
         
         cout << "Enter engine type(Disel, Petrol, Gas, Electric): ";
         is >> e.type;
@@ -257,6 +259,7 @@ class Car : public Vehicle
         cout << "Car created, count of instances " << instCount << endl;
         this->seats = seats;
     }
+    Car(double power, int seats) : Car(*new Engine(power), "", "", 0, 0, 0, "", 0, seats) {}
     Car() : Car(*new Engine(), "", "", 0, 0, 0, "", 0, 0) {}
     ~Car()
     {
@@ -375,9 +378,34 @@ Truck& createAndInputTruck()
     cout << "}" << endl;
     return t;
 }
+void SortByPowerDescending(Car* arr[], int size)
+{
+    for (int i = 0; i < size; i++) {
+        for (int j = 1; j < size - i; j++) {
+            if (arr[j]->getEngine().getPower() > arr[j - 1]->getEngine().getPower()) {
+                Car* temp = arr[j];
+                arr[j] = arr[j - 1];
+                arr[j - 1] = temp;
+            }
+        }
+    }
+}
 int main()
 {
-
+    int n = 5;
+    Car* arr[n];
+    arr[0] = new Car(10, 4);
+    arr[1] = new Car(8, 8);
+    arr[2] = new Car(14, 3);
+    arr[3] = new Car(5, 2);
+    arr[4] = new Car(90, 5);
     
+    SortByPowerDescending(arr, n);
+    for(Car* c : arr)
+        if(c->getSeats() <= 5)
+            cout << *c << endl;
+    
+    for(Car* c : arr)
+        delete c;
     return 0;
 }
