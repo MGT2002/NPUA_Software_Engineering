@@ -99,9 +99,9 @@ class Engine
     
     friend ostream& operator<<(ostream& os, const Engine& e)
     {
-        os << "Engine {model: " << e.getModel() << ", Date: "
+        os << "model: " << e.getModel() << ", Date: "
             << e.getDate() << ", Power: " << e.getPower() << 
-            ", EngineType: " << e.getEngineType() << "}";
+            ", EngineType: " << e.getEngineType();
         return os;
     }
 
@@ -203,11 +203,11 @@ class Vehicle
     
     friend ostream& operator<<(ostream& os, const Vehicle& v)
     {
-        os << "Vehicle {producer: " << v.getProducer() << ", price: "
+        os << "producer: " << v.getProducer() << ", price: "
             << v.getPrice() << ", weight: " << v.getWeight() << 
             ", MaxSpeed: " << v.getMaxSpeed() <<
-            ", date: " << v.getDate() << ",\n Engine: " 
-            << v.engine << "\n}";
+            ", date: " << v.getDate() << ",\n Engine: { " 
+            << v.engine << "}";
         return os;
     }
 
@@ -254,9 +254,10 @@ class Car : public Vehicle
     : Vehicle(engine, producer, model, price, weight, maxSpeed, date)
     {
         instCount++;
-        cout << "Truck created, count of instances " << instCount << endl;
+        cout << "Car created, count of instances " << instCount << endl;
         this->seats = seats;
     }
+    Car() : Car(*new Engine(), "", "", 0, 0, 0, "", 0, 0) {}
     ~Car()
     {
         instCount--;
@@ -270,6 +271,24 @@ class Car : public Vehicle
     void setSeats(int seats)
     {
         this->seats = seats;
+    }
+    
+    friend ostream& operator<<(ostream& os, Car& c) 
+    {
+        os << "seats: " << c.getSeats() << ", ";
+        os << static_cast<Vehicle&>(c);
+        return os;
+    }
+    friend istream& operator>>(istream& is, Car& c) 
+    {
+        int input;
+        cout << "Enter seats: ";
+        is >> input;
+        c.setSeats(input);
+        
+        is >> static_cast<Vehicle&>(c);
+        
+        return is;
     }
 }; int Car::instCount = 0;
 
@@ -289,6 +308,7 @@ class Truck : public Vehicle
         cout << "Truck created, count of instances " << instCount << endl;
         this->maxLoad = maxLoad;
     }
+    Truck() : Truck(*new Engine(), "", "", 0, 0, 0, "", 0) {}
     ~Truck()
     {
         instCount--;
@@ -302,6 +322,24 @@ class Truck : public Vehicle
     void setMaxLoad(double maxLoad)
     {
         this->maxLoad = maxLoad;
+    }
+    
+    friend ostream& operator<<(ostream& os, Truck& t) 
+    {
+        os << "max load: " << t.getMaxLoad() << ", ";
+        os << static_cast<Vehicle&>(t);
+        return os;
+    }
+    friend istream& operator>>(istream& is, Truck& t) 
+    {
+        double input;
+        cout << "Enter max load: ";
+        is >> input;
+        t.setMaxLoad(input);
+        
+        is >> static_cast<Vehicle&>(t);
+        
+        return is;
     }
 };int Truck::instCount = 0;
 
@@ -321,9 +359,25 @@ Vehicle& createAndInputVehicle()
     cout << "}" << endl;
     return v;
 }
+Car& createAndInputCar()
+{
+    Car& c = *new Car();
+    cout << "c = {";
+    cin >> c;
+    cout << "}" << endl;
+    return c;
+}
+Truck& createAndInputTruck()
+{
+    Truck& t = *new Truck();
+    cout << "t = {";
+    cin >> t;
+    cout << "}" << endl;
+    return t;
+}
 int main()
 {
-    
+
     
     return 0;
 }
