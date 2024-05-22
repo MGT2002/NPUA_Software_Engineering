@@ -165,6 +165,12 @@ class Vehicle
         cout << "Vehicle deleted, count of instances " << instCount << endl;
     }
     
+    void Run(double tillVelocity)
+    {
+        start();
+        accelerate(tillVelocity);
+        stop();
+    }
     void draw() const
     {
         cout << "Vehicle : {producer: "<< producer << ", model: " << model <<"}";
@@ -313,6 +319,7 @@ class Car : public Vehicle
             
         setVelocity(getVelocity() + 10);
         cout << "acceleration! velocity = " << getVelocity()<< endl;
+        accelerate(tillVelocity);
     }
     void stop()override
     {
@@ -380,17 +387,38 @@ class Truck : public Vehicle
     static int instCount;
     
     double maxLoad;
+    double _currentLoad;
+    
+    void start()override
+    {
+        cout << "Truck started!"<<endl;
+    }
+    void accelerate(double tillVelocity)override
+    {
+        if(getVelocity() >= getMaxVelocity())
+            return;
+            
+        setVelocity(getVelocity() + 10);
+        cout << "acceleration! velocity = " << getVelocity()<< endl;
+        accelerate(tillVelocity);
+    }
+    void stop()override
+    {
+        setVelocity(0);
+        cout << "Truck stopped!" << endl;
+    }
     
     public:
     
-    Truck(Engine& engine, string producer, string model, double price, double weight, double maxSpeed, string date, double maxLoad)
-    : Vehicle(engine, producer, model, price, weight, maxSpeed, date)
+    Truck(Engine& engine, string producer, string model, double price, double weight, double maxSpeed, string date, double maxLoad,
+        double maxVelocity)
+    : Vehicle(engine, producer, model, price, weight, maxSpeed, date, maxVelocity)
     {
         instCount++;
         cout << "Truck created, count of instances " << instCount << endl;
         this->maxLoad = maxLoad;
     }
-    Truck() : Truck(*new Engine(), "", "", 0, 0, 0, "", 0) {}
+    Truck() : Truck(*new Engine(), "", "", 0, 0, 0, "", 0, 30) {}
     ~Truck() override
     {
         instCount--;
@@ -413,6 +441,14 @@ class Truck : public Vehicle
     void setMaxLoad(double maxLoad)
     {
         this->maxLoad = maxLoad;
+    }
+    double getCurrentLoad()
+    {
+        return _currentLoad;
+    }
+    void setCurrentLoad(double value)
+    {
+        this->_currentLoad = value;
     }
     
     friend ostream& operator<<(ostream& os, Truck& t) 
@@ -472,7 +508,16 @@ void SortByPowerDescending(Car* arr[], int size)
 }
 int main()
 {
-
+    const int n = 2;
+    Vehicle* arr[n];
+    arr[0] = new Car();
+    arr[1] = new Truck();
+    
+    for(Vehicle* v: arr)
+        v->Run(100);
+    
+    for(Vehicle* v: arr)
+        delete v;
     
     return 0;
 }
