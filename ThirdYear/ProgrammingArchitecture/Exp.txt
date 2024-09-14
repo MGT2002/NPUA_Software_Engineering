@@ -1,0 +1,100 @@
+Sure! To write assembly code for calculating the sum of an arithmetic progression (AP) where the user inputs the first term (`a1`), the common difference (`d`), and the number of terms (`n`), we need to:
+
+1. Read the values of `a1`, `d`, and `n` from the user.
+2. Calculate the sum of the arithmetic progression using the formula:
+   \[
+   \text{Sum} = \frac{n}{2} \times [2 \times a1 + (n - 1) \times d]
+   \]
+3. Print the result.
+
+Here is a sample NASM assembly code for a 32-bit x86 environment using macros for I/O operations. Note that the exact syntax for macros like `GET_DEC` and `PRINT_DEC` will depend on the definitions provided in the `io.inc` file, so you'll need to adjust these macros based on your actual `io.inc`.
+
+### Assembly Code
+
+```asm
+%include "io.inc"
+
+section .bss
+    a1 resd 1          ; Reserve space for the first term
+    d  resd 1           ; Reserve space for the common difference
+    n  resd 1           ; Reserve space for the number of terms
+    sum resd 1          ; Reserve space for the sum
+
+section .text
+global main
+
+main:
+    mov ebp, esp       ; Set up the stack frame
+
+    ; Get input for the first term (a1)
+    GET_DEC 4, eax     ; Read first term into eax
+    mov [a1], eax      ; Store the first term in memory
+
+    ; Get input for the common difference (d)
+    GET_DEC 4, eax     ; Read common difference into eax
+    mov [d], eax       ; Store the common difference in memory
+
+    ; Get input for the number of terms (n)
+    GET_DEC 4, eax     ; Read number of terms into eax
+    mov [n], eax       ; Store the number of terms in memory
+
+    ; Load values into registers for calculation
+    mov eax, [a1]      ; Load a1 into eax
+    mov ebx, [d]       ; Load d into ebx
+    mov ecx, [n]       ; Load n into ecx
+
+    ; Calculate (n - 1) * d
+    dec ecx            ; ecx = n - 1
+    imul ebx, ecx      ; ebx = (n - 1) * d
+
+    ; Calculate 2 * a1
+    shl eax, 1         ; eax = 2 * a1
+
+    ; Add 2 * a1 + (n - 1) * d
+    add eax, ebx       ; eax = 2 * a1 + (n - 1) * d
+
+    ; Calculate n / 2
+    mov edx, 0         ; Clear edx for division
+    div dword [n]      ; eax = eax / n, result in eax
+
+    ; Calculate sum = (n / 2) * (2 * a1 + (n - 1) * d)
+    mov [sum], eax     ; Store the result in memory
+
+    ; Print the result
+    PRINT_DEC 4, [sum] ; Print the result
+
+    ; Print newline
+    NEWLINE
+
+    ; Exit
+    xor eax, eax       ; Set eax to 0 (return value)
+    ret
+```
+
+### Explanation
+
+1. **Memory Allocation**:
+   - `section .bss` is used to reserve space for variables. We use `resd 1` to reserve space for each variable (`a1`, `d`, `n`, and `sum`).
+
+2. **Input Reading**:
+   - `GET_DEC 4, eax` reads a 32-bit integer from the user and stores it in `eax`. We then move this value into the corresponding memory location.
+
+3. **Arithmetic Calculations**:
+   - We load values into registers and perform the necessary arithmetic operations:
+     - Compute `(n - 1) * d`.
+     - Compute `2 * a1`.
+     - Compute `2 * a1 + (n - 1) * d`.
+     - Divide the result by `n` to get the sum of the arithmetic progression.
+
+4. **Printing the Result**:
+   - `PRINT_DEC 4, [sum]` prints the calculated sum.
+   - `NEWLINE` prints a newline character for formatting.
+
+5. **Exit**:
+   - `xor eax, eax` clears the `eax` register to return `0`.
+   - `ret` returns from the `main` function.
+
+### Notes
+
+- Make sure the `io.inc` file defines the macros `GET_DEC`, `PRINT_DEC`, and `NEWLINE` correctly to handle user input and output operations.
+- If you are using a different architecture or assembly environment, adjust the instructions and macros as needed.
