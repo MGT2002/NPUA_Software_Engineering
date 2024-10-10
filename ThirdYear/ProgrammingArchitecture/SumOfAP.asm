@@ -59,15 +59,11 @@ main:
     
     ; Calculate sum = n * (2 * a1 + (n - 1) * d)
     mov ebx, [sum] ; ebx = 2*a1+(n-1)*d
-    imul eax, ebx ; eax = n/2 * ebx
-    mov [sum], eax ; sum = eax
-    
-    ;Sum = Sum/2
-    mov eax, [sum]
-    shr eax, 1
+    mov eax, [n] ; eax = n
+    imul eax, ebx ; eax = n * ebx
+    shr eax, 1 ; sum = eax/2
     mov [sum], eax
     
-    ; Print the result
     PRINT_DEC 4, [sum] ; Print the result
     NEWLINE
 
